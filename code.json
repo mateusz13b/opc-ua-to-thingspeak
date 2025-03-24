@@ -27,60 +27,6 @@
         "wires": []
     },
     {
-        "id": "85d6bf3c144741ea",
-        "type": "inject",
-        "z": "a22ae17a5542cbfc",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "availability",
-        "payload": "79",
-        "payloadType": "num",
-        "x": 510,
-        "y": 880,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "d05c552eb5e90e64",
-        "type": "inject",
-        "z": "a22ae17a5542cbfc",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "performance",
-        "payload": "96",
-        "payloadType": "num",
-        "x": 480,
-        "y": 940,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "b20ae18d869b35e3",
         "type": "inject",
         "z": "a22ae17a5542cbfc",
@@ -600,70 +546,6 @@
         ]
     },
     {
-        "id": "3a65b2beb23cef9f",
-        "type": "join",
-        "z": "a22ae17a5542cbfc",
-        "name": "Performance+quality",
-        "mode": "custom",
-        "build": "object",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "useparts": false,
-        "accumulate": true,
-        "timeout": "",
-        "count": "4",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 1110,
-        "y": 60,
-        "wires": [
-            [
-                "ddeca18a07c2d2e5"
-            ]
-        ]
-    },
-    {
-        "id": "2c52db2c57ac23ea",
-        "type": "debug",
-        "z": "a22ae17a5542cbfc",
-        "name": "Test2",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1110,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "ddeca18a07c2d2e5",
-        "type": "function",
-        "z": "a22ae17a5542cbfc",
-        "name": "Calc qual+perf",
-        "func": "const data = msg.payload;\n\nconst produced = data['ns=3;s=\"dbUN01_Labeler\".\"counter\".\"productProcessed\".\"count\" '];\nconst defective = data['ns=3;s=\"dbUN01_Labeler\".\"counter\".\"productDefective\".\"count\"'];\nconst wantedSpeed = data['ns=3;s=\"dbUN01_OMACPackTags\".\"status\".\"MachSpeed\" '];\nconst actualSpeed = data['ns=3;s=\"dbUN01_OMACPackTags\".\"status\".\"CurMachSpeed\" '];\n\nconst quality = (produced - defective) / produced;\nconst performance = actualSpeed / wantedSpeed;\n\nmsg.payload = {\n    //produced,\n    //defective,\n    //wantedSpeed,\n    //actualSpeed,\n    quality,\n    performance\n};\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1320,
-        "y": 60,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "cdfc8734beb92a2b",
         "type": "debug",
         "z": "a22ae17a5542cbfc",
@@ -679,53 +561,6 @@
         "x": 1230,
         "y": 400,
         "wires": []
-    },
-    {
-        "id": "6404624780f63174",
-        "type": "join",
-        "z": "a22ae17a5542cbfc",
-        "name": "Availability",
-        "mode": "custom",
-        "build": "object",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "useparts": false,
-        "accumulate": true,
-        "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 1100,
-        "y": 100,
-        "wires": [
-            [
-                "3c3c2b9cc7c418ca"
-            ]
-        ]
-    },
-    {
-        "id": "3c3c2b9cc7c418ca",
-        "type": "function",
-        "z": "a22ae17a5542cbfc",
-        "name": "function 1",
-        "func": "let cumulativeTime = msg.payload['ns=3;s=\"dbUN01_OMACPackTags\".\"admin\".\"StateCumulativeTime\" '];\nlet accTimeReset = msg.payload['ns=3;s=\"dbUN01_Labeler\".\"MSM\".\"times\".\"accTimeSinceReset\"'];\n\n\nlet productionTime = cumulativeTime[24]; // либо другой индекс, если другая логика нужна\n\nproductionTime = Math.abs(productionTime);\naccTimeReset = Math.abs(accTimeReset);\n\nlet availability = accTimeReset !== 0 ? productionTime / accTimeReset : 0;\n\nmsg.payload = {\n    //productionTime: productionTime,\n    //accTimeSinceReset: accTimeReset,\n    availability: availability \n};\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1320,
-        "y": 100,
-        "wires": [
-            []
-        ]
     },
     {
         "id": "c4d71a8019ffb3bc",
@@ -753,26 +588,6 @@
         "wires": [
             [
                 "44d0f4dc9973e0fb"
-            ]
-        ]
-    },
-    {
-        "id": "07c8ead032cda0cc",
-        "type": "function",
-        "z": "a22ae17a5542cbfc",
-        "name": "all6",
-        "func": "let cumulativeTime = msg.payload['ns=3;s=\"dbUN01_OMACPackTags\".\"admin\".\"StateCumulativeTime\" '];\nlet accTimeReset = msg.payload['ns=3;s=\"dbUN01_Labeler\".\"MSM\".\"times\".\"accTimeSinceReset\"'];\n\n\nlet produced = msg.payload['ns=3;s=\"dbUN01_Labeler\".\"counter\".\"productProcessed\".\"count\" '];\nlet defective = msg.payload['ns=3;s=\"dbUN01_Labeler\".\"counter\".\"productDefective\".\"count\"'];\nlet wantedSpeed = msg.payload['ns=3;s=\"dbUN01_OMACPackTags\".\"status\".\"MachSpeed\" '];\nlet actualSpeed = msg.payload['ns=3;s=\"dbUN01_OMACPackTags\".\"status\".\"CurMachSpeed\" '];\n\nlet quality = (produced - defective) / produced;\nlet performance = actualSpeed / wantedSpeed;\nlet productionTime = cumulativeTime[24]; \n\nproductionTime = Math.abs(productionTime);\naccTimeReset = Math.abs(accTimeReset);\n\nlet availability = accTimeReset !== 0 ? productionTime / accTimeReset : 0;\n\nlet OEE = quality * availability * performance;\n\nmsg.payload = {\n    //produced,\n    //defective,\n    //wantedSpeed,\n    //actualSpeed,\n    quality,\n    performance,\n    //productionTime: productionTime,\n    //accTimeSinceReset: accTimeReset,\n    availability: availability,\n    OEE: OEE \n};\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1090,
-        "y": 400,
-        "wires": [
-            [
-                "cdfc8734beb92a2b"
             ]
         ]
     },
